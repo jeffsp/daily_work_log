@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+    daily_work_log
+    ~~~~~~~~~~~~~~
+
+    Make a daily work log entry
+
+    jsp Thu Jul  2 09:03:38 CDT 2015
+"""
+
+from __future__ import print_function
+import datetime
+import os
+
+# Datetime formats
+FILENAME_DATE_FMT = '%Y%m%d'
+HEADER_DATE_FMT = '%A %B %d, %Y'
+
+# Log filename
+FILENAME_FMT = '%s.md'
+
+# Directory structure
+WORK_LOG_DIR = 'Projects/daily_work_log'
+
+# Editor
+EDIT_COMMAND = 'vim +$ +startinsert'
+
+
+def main():
+    """
+    Main program
+    """
+
+    home = os.path.expanduser("~")
+    log_dir = os.path.join(home, WORK_LOG_DIR)
+
+    print('Log directory: %s' % log_dir)
+
+    if not os.path.exists(log_dir):
+        raise RuntimeError('%s does not exist' % log_dir)
+
+    # Get last Monday's date
+    today = datetime.date.today()
+    last_monday = today + datetime.timedelta(days=-today.weekday())
+
+    # File name is a markdown file
+    date_str = last_monday.strftime(FILENAME_DATE_FMT)
+    filename = os.path.join(log_dir, FILENAME_FMT % date_str)
+
+    # Write a header above each day's entry
+    space_flag = False
+    header_flag = True
+    header_str = datetime.datetime.today().strftime(HEADER_DATE_FMT)
+
+    # Determine if you need to write a header
+    if os.path.exists(filename):
+        space_flag = True
+        with open(filename) as fobj:
+            lines = [line.strip('\n') for line in fobj.readlines()]
+            if header_str in lines:
+                header_flag = False
+
+    print('Opening %s' % filename)
+
+    # Write a date header
+    if header_flag:
+        with open(filename, 'a') as fobj:
+            if space_flag:
+                fobj.write('\n')
+            fobj.write('%s\n' % header_str)
+            fobj.write('='*len(header_str))
+            fobj.write('\n\n')
+
+    # Write a newline and a bullet
+    with open(filename, 'a') as fobj:
+        fobj.write('\n')
+
+    # Edit it
+    cmd = '%s %s' % (EDIT_COMMAND, filename)
+    print('Executing "%s"' % cmd)
+    os.system(cmd)
+
+
+if __name__ == '__main__':
+    main()

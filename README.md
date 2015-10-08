@@ -2,7 +2,7 @@
 
 Simple script to generate md log files.
 
-During the day, I run '$daily_work_log' when I finish a task.
+During the day, I run 'daily_work_log' when I finish a task.
 
 The script will create an md file in the application's directory if one does not already exist for the current week.
 
